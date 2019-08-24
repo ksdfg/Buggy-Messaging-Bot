@@ -10,10 +10,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 whatsapp_api = "https://api.whatsapp.com/send?phone=91"  # format of url to open chat with someone
 
-hello = "Hey, {} :wave:"  # what to print before name
-
-# what to print after name
-message = "\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! " \
+# what to send
+message = "Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! " \
           "Please report to _D building 2nd Floor_ with your QR code :smiley:" \
           "\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:" \
           "\nSee you tomorrow! :v:\n- The Script Group bot 🤖\n"
@@ -22,7 +20,7 @@ message = "\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*
 # method to send a message to someone
 def sendMessage(num, name, browser):
     api = whatsapp_api + str(num)  # specific url
-    final = emojize(hello.format(name) + message, use_aliases=True)  # full message with name
+    final = emojize(message.format(name), use_aliases=True)  # full message with name
     print(api, name)
     browser.get(api)  # open url in browser
     browser.find_element_by_xpath('//*[@id="action-button"]').click()  # click on "send message" button
