@@ -1,15 +1,21 @@
 import pyautogui as py
 import pandas as pd
 import time
+from emoji import emojize
 
 whatsapp_api = "https://api.whatsapp.com/send?phone=91"
-hello = "Hey, "
-message = "This is to remind you that the C/C++ workshop is tomorrow at 3:30pm. Location will be given out soon (Most probably SL 2,3 Lab in N-building, 1st floor). Do confirm if you'll be attending the workshop :D\n\nSee you tomorrow!"
+hello = "Bleep Bloop, I'm a bot\nHey, "
+
+message = emojize("This is to remind you that Ready Set Code is tomorrow at 3:30pm!" +
+                  " Location will be given out soon (Most probably in D-building, 3rd floor)." +
+                  "\nSee you tomorrow! :)\n- The Script Group", use_aliases=True)
+
 
 def timer():
     for x in range(5, 0, -1):
         print(x)
         time.sleep(1)
+
 
 def sendMessage(num, name):
     api = whatsapp_api + str(num)
@@ -17,23 +23,29 @@ def sendMessage(num, name):
     print(api, name)
     py.hotkey('ctrl', 't')
     time.sleep(1)
-    py.typewrite(api, interval = 0.01)
+    py.typewrite(api, interval=0.01)
     py.press('enter')
     time.sleep(3)
-    py.click(680, 360)
-    time.sleep(15)
-    py.typewrite(final, interval = 0.01)
+    py.press(['\t', '\t', 'enter'])
+    while True:
+        if py.getWindowsWithTitle(') Whatsapp'):
+            break
+        time.sleep(0.2)
+    time.sleep(4)
+    py.typewrite(final, interval=0.01)
     py.press('enter')
     time.sleep(5)
     py.hotkey('ctrl', 'w')
-             
+
 
 if __name__ == "__main__":
     timer()
-    excel = pd.read_excel("New.xlsx")
+    py.getWindowsWithTitle('Mozilla Firefox')[0].activate()
+    excel = pd.read_excel("Tests.xlsx")
     numbers = excel['Number'].tolist()
     names = excel['Name'].tolist()
     ctr = 0
+
     for num, name in zip(numbers, names):
         sendMessage(num, name)
         ctr += 1
@@ -41,4 +53,3 @@ if __name__ == "__main__":
             break
 
     py.hotkey('win', 'm')
-    
