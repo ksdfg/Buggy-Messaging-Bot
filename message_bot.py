@@ -1,14 +1,13 @@
 import pyautogui as py
 import pandas as pd
 import time
-from emoji import emojize
 
 whatsapp_api = "https://api.whatsapp.com/send?phone=91"
 hello = "Bleep Bloop, I'm a bot\nHey, "
 
-message = emojize("This is to remind you that Ready Set Code is tomorrow at 3:30pm!" +
-                  " Location will be given out soon (Most probably in D-building, 3rd floor)." +
-                  "\nSee you tomorrow! :)\n- The Script Group", use_aliases=True)
+message = "This is to remind you that Ready Set Code is tomorrow at 3:30pm!" \
+          " Location will be given out soon (Most probably in D-building, 3rd floor)." \
+          "\nSee you tomorrow! :)\n- The Script Group"
 
 
 def timer():
