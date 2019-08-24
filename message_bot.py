@@ -1,6 +1,7 @@
 import time
 
 import pandas as pd
+from emoji import emojize
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -9,18 +10,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 whatsapp_api = "https://api.whatsapp.com/send?phone=91"  # format of url to open chat with someone
 
-hello = "Beep Boop, I'm a bot\nHey, "  # what to print before name
+hello = "Hey, {} :wave:"  # what to print before name
 
 # what to print after name
-message = "This is to remind you that Ready Set Code is tomorrow at 3:30pm!" \
-          " Location will be given out soon (Most probably in D-building, 3rd floor)." \
-          "\nSee you tomorrow! :)\n- The Script Group\n"
+message = "\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! " \
+          "Please report to _D building 2nd Floor_ with your QR code :smiley:" \
+          "\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:" \
+          "\nSee you tomorrow! :v:\n- The Script Group bot 🤖\n"
 
 
 # method to send a message to someone
 def sendMessage(num, name, browser):
     api = whatsapp_api + str(num)  # specific url
-    final = hello + name + "!\n" + message  # full message with name
+    final = emojize(hello.format(name) + message, use_aliases=True)  # full message with name
     print(api, name)
     browser.get(api)  # open url in browser
     browser.find_element_by_xpath('//*[@id="action-button"]').click()  # click on "send message" button
@@ -38,7 +40,7 @@ def sendMessage(num, name, browser):
         '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     ).send_keys(final)
 
-    time.sleep(3)  # just so that we can supervise, otherwise it's too fast
+    time.sleep(5)  # just so that we can supervise, otherwise it's too fast
 
 
 if __name__ == "__main__":
