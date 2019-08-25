@@ -8,6 +8,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
+import json
+import os
+import requests
+
 whatsapp_api = (
     "https://api.whatsapp.com/send?phone=91"
 )  # format of url to open chat with someone
@@ -54,10 +58,22 @@ def sendMessage(num, name, browser):
 
 
 if __name__ == "__main__":
+
     # read all entries to send message to
-    excel = pd.read_excel("Tests.xlsx")
-    numbers = excel["Number"].tolist()
-    names = excel["Name"].tolist()
+    names = []
+    numbers = []
+
+    headers = {"Authorization": os.getenv("AUTHORIZATION_KEY")}
+
+    data = json.loads(
+        requests.get(
+            "https://the-script-group.herokuapp.com/users_json?table=RSC2019",
+            headers=headers,
+        ).text
+    )
+    for user_id in data:
+        names.append(data[user_id]["name"])
+        numbers.append(data[user_id]["phone"])
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = webdriver.Firefox(executable_path="geckodriver.exe")
