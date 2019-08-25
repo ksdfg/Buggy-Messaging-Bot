@@ -1,6 +1,7 @@
+import json
 import time
 
-import pandas as pd
+import requests
 from emoji import emojize
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -8,9 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-import json
-import os
-import requests
+import heroku
 
 whatsapp_api = (
     "https://api.whatsapp.com/send?phone=91"
@@ -63,14 +62,9 @@ if __name__ == "__main__":
     names = []
     numbers = []
 
-    headers = {"Authorization": os.getenv("AUTHORIZATION_KEY")}
+    headers = {"Authorization": heroku.token}
 
-    data = json.loads(
-        requests.get(
-            "https://the-script-group.herokuapp.com/users_json?table=RSC2019",
-            headers=headers,
-        ).text
-    )
+    data = json.loads(requests.get(heroku.url, headers=headers, ).text)
     for user_id in data:
         names.append(data[user_id]["name"])
         phone = data[user_id]["phone"].split("|")
