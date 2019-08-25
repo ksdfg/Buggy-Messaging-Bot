@@ -17,14 +17,15 @@ whatsapp_api = (
 
 # what to send
 message = (
-    'Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! '
+    'Hey, {} :wave:'
+    '\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! '
     'Please report to _D building 2nd Floor_ with your QR code :smiley:'
     '\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:'
     '\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n'
 )
 
 
-def waitTillLoaded(browser, element):
+def waitTillElementLoaded(browser, element):
     try:
         element_present = ec.presence_of_element_located((By.XPATH, element))
         WebDriverWait(browser, 10000).until(element_present)
@@ -38,7 +39,7 @@ def sendMessage(num, name, browser):
     print(api, name)
     browser.get(api)  # open url in browser
 
-    waitTillLoaded(
+    waitTillElementLoaded(
         browser, '//*[@id="action-button"]'
     )  # wait till send message button is loaded
     browser.find_element_by_xpath(
@@ -46,7 +47,7 @@ def sendMessage(num, name, browser):
     ).click()  # click on "send message" button
 
     # wait till the text box is loaded onto the screen, then type out and send the full message
-    waitTillLoaded(
+    waitTillElementLoaded(
         browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     )
 
@@ -54,18 +55,18 @@ def sendMessage(num, name, browser):
         '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
-    time.sleep(3)  # just so that we can supervise, otherwise it's too fast
+    time.sleep(4)  # just so that we can supervise, otherwise it's too fast
 
 
 if __name__ == '__main__':
 
-    # read all entries to send message to
-    names = []
-    numbers = []
+    names = []  # list of all names
+    numbers = []  # list of all numbers
 
-    headers = {'Authorization': heroku.token}
+    # get data from heroku
+    data = json.loads(requests.get(heroku.url, headers={'Authorization': heroku.token}, ).text)
 
-    data = json.loads(requests.get(heroku.url, headers=headers, ).text)
+    # add names and numbers to respective lists
     for user_id in data:
         names.append(data[user_id]['name'])
         numbers.append(data[user_id]['phone'].split('|')[-1])
@@ -75,8 +76,8 @@ if __name__ == '__main__':
     webbrowser.get('https://web.whatsapp.com/')
 
     # wait till the text box is loaded onto the screen
-    waitTillLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
-
+    waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
+    
     # send messages to all entries in file
     for num, name in zip(numbers, names):
         sendMessage(num, name, webbrowser)
