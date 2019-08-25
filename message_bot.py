@@ -53,7 +53,7 @@ def sendMessage(num, name, browser):
         "/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]"
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
-    time.sleep(5)  # just so that we can supervise, otherwise it's too fast
+    time.sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
 if __name__ == "__main__":
@@ -67,10 +67,7 @@ if __name__ == "__main__":
     data = json.loads(requests.get(heroku.url, headers=headers, ).text)
     for user_id in data:
         names.append(data[user_id]["name"])
-        phone = data[user_id]["phone"].split("|")
-        if len(phone) > 1:
-            phone = phone[1]
-        numbers.append(phone)
+        numbers.append(data[user_id]["phone"].split("|")[-1])
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = webdriver.Firefox(executable_path="geckodriver.exe")
