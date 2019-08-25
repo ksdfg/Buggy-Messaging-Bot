@@ -8,13 +8,21 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-whatsapp_api = "https://api.whatsapp.com/send?phone=91"  # format of url to open chat with someone
+import json
+import os
+import requests
+
+whatsapp_api = (
+    "https://api.whatsapp.com/send?phone=91"
+)  # format of url to open chat with someone
 
 # what to send
-message = "Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! " \
-          "Please report to _D building 2nd Floor_ with your QR code :smiley:" \
-          "\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:" \
-          "\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n"
+message = (
+    "Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! "
+    "Please report to _D building 2nd Floor_ with your QR code :smiley:"
+    "\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:"
+    "\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n"
+)
 
 
 def waitTillLoaded(browser, element):
@@ -31,30 +39,51 @@ def sendMessage(num, name, browser):
     print(api, name)
     browser.get(api)  # open url in browser
 
-    waitTillLoaded(browser, '//*[@id="action-button"]')  # wait till send message button is loaded
-    browser.find_element_by_xpath('//*[@id="action-button"]').click()  # click on "send message" button
+    waitTillLoaded(
+        browser, '//*[@id="action-button"]'
+    )  # wait till send message button is loaded
+    browser.find_element_by_xpath(
+        '//*[@id="action-button"]'
+    ).click()  # click on "send message" button
 
     # wait till the text box is loaded onto the screen, then type out and send the full message
-    waitTillLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]')
+    waitTillLoaded(
+        browser, "/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]"
+    )
     browser.find_element_by_xpath(
-        '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
+        "/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]"
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
     time.sleep(5)  # just so that we can supervise, otherwise it's too fast
 
 
 if __name__ == "__main__":
+
     # read all entries to send message to
-    excel = pd.read_excel("Tests.xlsx")
-    numbers = excel['Number'].tolist()
-    names = excel['Name'].tolist()
+    names = []
+    numbers = []
+
+    headers = {"Authorization": os.getenv("AUTHORIZATION_KEY")}
+
+    data = json.loads(
+        requests.get(
+            "https://the-script-group.herokuapp.com/users_json?table=RSC2019",
+            headers=headers,
+        ).text
+    )
+    for user_id in data:
+        names.append(data[user_id]["name"])
+        phone = data[user_id]["phone"].split("|")
+        if len(phone) > 1:
+            phone = phone[1]
+        numbers.append(phone)
 
     # create a browser instance, login to whatsapp (one time per run)
-    webbrowser = webdriver.Firefox(executable_path='geckodriver.exe')
-    webbrowser.get('https://web.whatsapp.com/')
+    webbrowser = webdriver.Firefox(executable_path="geckodriver.exe")
+    webbrowser.get("https://web.whatsapp.com/")
 
     # wait till the text box is loaded onto the screen
-    waitTillLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
+    waitTillLoaded(webbrowser, "/html/body/div[1]/div/div/div[4]/div/div/div[1]")
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
