@@ -12,15 +12,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 import heroku
 
 whatsapp_api = (
-    "https://api.whatsapp.com/send?phone=91"
+    'https://api.whatsapp.com/send?phone=91'
 )  # format of url to open chat with someone
 
 # what to send
 message = (
-    "Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! "
-    "Please report to _D building 2nd Floor_ with your QR code :smiley:"
-    "\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:"
-    "\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n"
+    'Hey, {} :wave:\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! '
+    'Please report to _D building 2nd Floor_ with your QR code :smiley:'
+    '\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:'
+    '\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n'
 )
 
 
@@ -29,7 +29,7 @@ def waitTillLoaded(browser, element):
         element_present = ec.presence_of_element_located((By.XPATH, element))
         WebDriverWait(browser, 10000).until(element_present)
     except TimeoutException:
-        print("Timed out waiting for page to load")
+        print('Timed out waiting for page to load')
 
 
 # method to send a message to someone
@@ -47,34 +47,35 @@ def sendMessage(num, name, browser):
 
     # wait till the text box is loaded onto the screen, then type out and send the full message
     waitTillLoaded(
-        browser, "/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]"
+        browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     )
+
     browser.find_element_by_xpath(
-        "/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]"
+        '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
     time.sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     # read all entries to send message to
     names = []
     numbers = []
 
-    headers = {"Authorization": heroku.token}
+    headers = {'Authorization': heroku.token}
 
     data = json.loads(requests.get(heroku.url, headers=headers, ).text)
     for user_id in data:
-        names.append(data[user_id]["name"])
-        numbers.append(data[user_id]["phone"].split("|")[-1])
+        names.append(data[user_id]['name'])
+        numbers.append(data[user_id]['phone'].split('|')[-1])
 
     # create a browser instance, login to whatsapp (one time per run)
-    webbrowser = webdriver.Firefox(executable_path="geckodriver.exe")
-    webbrowser.get("https://web.whatsapp.com/")
+    webbrowser = webdriver.Firefox(executable_path='geckodriver.exe')
+    webbrowser.get('https://web.whatsapp.com/')
 
     # wait till the text box is loaded onto the screen
-    waitTillLoaded(webbrowser, "/html/body/div[1]/div/div/div[4]/div/div/div[1]")
+    waitTillLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
