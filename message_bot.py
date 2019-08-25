@@ -73,7 +73,10 @@ if __name__ == "__main__":
     )
     for user_id in data:
         names.append(data[user_id]["name"])
-        numbers.append(data[user_id]["phone"])
+        phone = data[user_id]["phone"].split("|")
+        if len(phone) > 1:
+            phone = phone[1]
+        numbers.append(phone)
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = webdriver.Firefox(executable_path="geckodriver.exe")
