@@ -66,10 +66,14 @@ if __name__ == '__main__':
     # get data from heroku
     data = json.loads(requests.get(heroku.url, headers={'Authorization': heroku.token}, ).text)
 
+    ids_to_send = [2, 3, 9, 10, 11, 12, 13, 16, 20, 21, 22, 27, 28, 32, 34, 36, 40, 47, 50, 55, 58, 59, 62, 64, 68, 69, 74, 78, 80, 81, 82, 83, 94]
+
+
     # add names and numbers to respective lists
     for user_id in data:
-        names.append(data[user_id]['name'])
-        numbers.append(data[user_id]['phone'].split('|')[-1])
+        if user_id in ids_to_send:
+            names.append(data[user_id]['name'])
+            numbers.append(data[user_id]['phone'].split('|')[-1])
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = webdriver.Firefox(executable_path='geckodriver.exe')
