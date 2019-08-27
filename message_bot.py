@@ -1,5 +1,7 @@
+import base64
 import json
-import time
+import os
+from time import sleep
 
 import requests
 from emoji import emojize
@@ -17,11 +19,7 @@ whatsapp_api = (
 
 # what to send
 message = (
-    'Hey, {} :wave:'
-    '\nThis is to remind you that *Ready Set Code* is tomorrow at *3:30pm*! '
-    'Please report to _D building 2nd Floor_ with your QR code :smiley:'
-    '\nIf you have a laptop, and wish to use your own net, please report to _D401_ :sunglasses:'
-    '\nSee you tomorrow! :v:\n- SCRIPT bot 🤖\n'
+    'insert message here'
 )
 
 
@@ -50,12 +48,11 @@ def sendMessage(num, name, browser):
     waitTillElementLoaded(
         browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     )
-
     browser.find_element_by_xpath(
         '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
-    time.sleep(4)  # just so that we can supervise, otherwise it's too fast
+    sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
 if __name__ == '__main__':
@@ -75,9 +72,19 @@ if __name__ == '__main__':
     webbrowser = webdriver.Firefox(executable_path='geckodriver.exe')
     webbrowser.get('https://web.whatsapp.com/')
 
+    # get the qr image
+    waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img')
+    if os.path.exists('qr.png'):
+        print('removing old qr')
+        os.remove('qr.png')
+    meow = open('qr.png', 'wb')
+    meow.write(base64.b64decode(webbrowser.find_element_by_xpath(
+        '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img').get_attribute('src')[22:]))
+    meow.close()
+
     # wait till the text box is loaded onto the screen
     waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
-    
+
     # send messages to all entries in file
     for num, name in zip(numbers, names):
         sendMessage(num, name, webbrowser)
