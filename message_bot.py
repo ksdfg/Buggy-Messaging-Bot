@@ -19,7 +19,10 @@ whatsapp_api = (
 
 # what to send
 message = (
-    'insert message here'
+    'Hey {} :wave:\n'
+    'This is the script bot :: informing you that blah blah\n'
+    'See you later! :v:\n'
+    'Team SCRIPT\n'
 )
 
 
