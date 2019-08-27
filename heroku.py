@@ -2,4 +2,4 @@
 url = '<url>'
 
 # authorization token
-token = '<token>
+token = '<token>'
