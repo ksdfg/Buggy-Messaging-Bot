@@ -37,22 +37,18 @@ def sendMessage(num, name, browser):
     print(api, name)
     browser.get(api)  # open url in browser
 
-    waitTillElementLoaded(
-        browser, '//*[@id="action-button"]'
-    )  # wait till send message button is loaded
-    browser.find_element_by_xpath(
-        '//*[@id="action-button"]'
-    ).click()  # click on "send message" button
+    waitTillLoaded(browser, '//*[@id="action-button"]')  # wait till send message button is loaded
+    browser.find_element_by_xpath('//*[@id="action-button"]').click()  # click on "send message" button
 
     # wait till the text box is loaded onto the screen, then type out and send the full message
-    waitTillElementLoaded(
-        browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
-    )
+    waitTillLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]')
+
     browser.find_element_by_xpath(
         '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
     ).send_keys(emojize(message.format(name), use_aliases=True))
 
     sleep(3)  # just so that we can supervise, otherwise it's too fast
+
 
 
 if __name__ == '__main__':
