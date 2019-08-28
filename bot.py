@@ -31,7 +31,7 @@ ids = dd(lambda: [])
 
 
 def normalise(txt):
-    return re.sub('^/.+ ', '', txt)
+    return re.sub('^/\w+ ', '', txt)
 
 
 @bot.message_handler(commands=['start'])
@@ -53,8 +53,7 @@ def peralta(message):
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
     try:
-        ids['nyan'] = 'all' if normalise(message.text) == 'all' \
-            else list(map(int, normalise(message.text).split()))
+        ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
         bot.reply_to(message, str(ids['nyan']))
     except:
         bot.reply_to(message, 'invalid ids')

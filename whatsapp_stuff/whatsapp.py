@@ -88,8 +88,20 @@ def getData(url, token, ids):
 
 if __name__ == '__main__':
 
-    with open(home + 'data.json', 'r') as f:
-        data = json.load(f)
+    if os.path.exists(r'whatsapp_stuff\data.json'):
+        with open(r'whatsapp_stuff\data.json', 'r') as f:
+            data = json.load(f)
+    else:
+        try:
+            data = {
+                'auth-token': os.environ['AUTH_TOKEN'],
+                'bot-token': os.environ['BOT_TOKEN'],
+                'browser': os.environ['BROWSER'],
+                'url': os.environ['API_URL']
+            }
+        except KeyError:
+            print("You don't have configuration JSON or environment variables set, go away")
+            exit(1)
 
     # get data from our API
     names, numbers = getData(data['url'], data['auth-token'], data['ids'])
