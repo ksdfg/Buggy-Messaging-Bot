@@ -83,7 +83,7 @@ if __name__ == '__main__':
         data = json.load(f)
 
     # get data from heroku
-    names, numbers = getData(data['url'], data['authtoken'])
+    names, numbers = getData(data['url'], data['auth-token'])
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = startSession()
