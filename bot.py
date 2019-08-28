@@ -1,7 +1,9 @@
 import json
 
 import telebot
+
 import whatsapp_stuff.whatsapp as meow
+from emoji import demojize
 
 with open(r'whatsapp_stuff\data.json', 'r') as f:
     data = json.load(f)
@@ -22,6 +24,12 @@ def stopBot(message):
 
 @bot.message_handler(commands=['whatsapp'])
 def startWhatsapp(message):
+    msg = (
+            'Hey, {} :wave:\n' +
+            demojize(message.text[10:]) + '\n' +
+            '- Team SCRIPT :v:\n'
+    )
+
     bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
     browser = meow.startSession(data['browser'])
@@ -37,14 +45,13 @@ def startWhatsapp(message):
     names, numbers = meow.getData(data['url'], data['auth-token'])
 
     # send messages to all entries in file
-    with open(r'whatsapp_Stuff\msg.txt', 'r') as msg:
-        for num, name in zip(numbers, names):
-            meow.sendMessage(num, name, f.read(), browser)
-
-    with open(r'whatsapp_stuff\msg.txt', 'r') as msg:
-        meow.sendMessage(9011152660, 'ksdfg', msg.read(), browser)
+    for num, name in zip(numbers, names):
+        meow.sendMessage(num, name, msg, browser)
 
     browser.close()
+
+    bot.send_message(message.from_user.id, 'Messages sent!')
+    print('done')
 
 
 bot.polling()

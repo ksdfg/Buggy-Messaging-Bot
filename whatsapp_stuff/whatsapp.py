@@ -99,6 +99,6 @@ if __name__ == '__main__':
     # send messages to all entries in file
     with open(home + 'msg.txt', 'r') as msg:
         for num, name in zip(numbers, names):
-            sendMessage(num, name, f.read(), webbrowser)
+            sendMessage(num, name, msg.read(), webbrowser)
 
     webbrowser.close()  # close browser
