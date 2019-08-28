@@ -1,5 +1,7 @@
 import json
 from collections import defaultdict as dd
+import os
+from os import environ
 import re
 
 import telebot
@@ -7,8 +9,21 @@ from emoji import demojize, emojize
 
 import whatsapp_stuff.whatsapp as meow
 
-with open(r'whatsapp_stuff\data.json', 'r') as f:
-    data = json.load(f)
+if os.path.exists(r'whatsapp_stuff\data.json'):
+    with open(r'whatsapp_stuff\data.json', 'r') as f:
+        data = json.load(f)
+else:
+    try:
+        data = {
+            'auth-token': environ['AUTH_TOKEN'],
+            'bot-token': environ['BOT_TOKEN'],
+            'browser': environ['BROWSER'],
+            'url': environ['API_URL']
+        }
+    except KeyError:
+        print("You don't have configuration JSON or environment variables set, go away")
+        exit(1)
+
 
 bot = telebot.TeleBot(data['bot-token'])
 
