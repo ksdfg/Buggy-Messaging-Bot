@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import re
 from time import sleep
 
 import requests
@@ -11,19 +12,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from . import heroku
+whatsapp_api = 'https://api.whatsapp.com/send?phone=91'  # format of url to open chat with someone
 
-whatsapp_api = (
-    'https://api.whatsapp.com/send?phone=91'
-)  # format of url to open chat with someone
-
-# what to send
-message = (
-    'Hey, {} :wave:\n'
-    'This is the script bot 🤖 informing you that you have been selected for the Personal Interview round! :tada: '
-    'Timing and location of the interview will be communicated to you later by mail :sweat_smile:\n'
-    'See you there! :v:\n- Team SCRIPT\n'
-)
+home = '' if re.match('.+whatsapp-stuff', os.getcwd()) else 'whatsapp-stuff\\'
 
 
 def waitTillElementLoaded(browser, element):
@@ -35,7 +26,7 @@ def waitTillElementLoaded(browser, element):
 
 
 # method to send a message to someone
-def sendMessage(num, name, browser):
+def sendMessage(num, name, msg, browser):
     api = whatsapp_api + str(num)  # specific url
     print(api, name)
     browser.get(api)  # open url in browser
@@ -48,47 +39,51 @@ def sendMessage(num, name, browser):
 
     browser.find_element_by_xpath(
         '/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]'
-    ).send_keys(emojize(message.format(name), use_aliases=True))
+    ).send_keys(emojize(msg.format(name), use_aliases=True))
 
     sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
 def startSession():
-    browser = webdriver.Firefox(executable_path='geckodriver.exe')
+    browser = webdriver.Firefox(executable_path=home + 'geckodriver.exe')
     browser.get('https://web.whatsapp.com/')
 
     # get the qr image
     waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img')
-    if os.path.exists('qr.png'):
+    if os.path.exists(home + 'qr.png'):
         print('removing old qr')
-        os.remove('qr.png')
-    meow = open('qr.png', 'wb')
+        os.remove(home + 'qr.png')
+    meow = open(home + 'qr.png', 'wb')
     meow.write(base64.b64decode(browser.find_element_by_xpath(
         '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img').get_attribute('src')[22:]))
     meow.close()
+    print('qr saved')
 
     return browser
 
 
 def getData(url, token):
-    names = []  # list of all names
-    numbers = []  # list of all numbers
+    names_list = []  # list of all names
+    numbers_list = []  # list of all numbers
 
     # get data from heroku
-    data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
+    heroku_data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
 
     # add names and numbers to respective lists
-    for user_id in data:
-        names.append(data[user_id]['name'])
-        numbers.append(data[user_id]['phone'].split('|')[-1])
+    for user_id in heroku_data:
+        names_list.append(heroku_data[user_id]['name'])
+        numbers_list.append(heroku_data[user_id]['phone'].split('|')[-1])
 
-    return names, numbers
+    return names_list, numbers_list
 
 
 if __name__ == '__main__':
 
+    with open(home + 'data.json', 'r') as f:
+        data = json.load(f)
+
     # get data from heroku
-    names, numbers = getData(heroku.url, heroku.token)
+    names, numbers = getData(data['url'], data['authtoken'])
 
     # create a browser instance, login to whatsapp (one time per run)
     webbrowser = startSession()
@@ -98,6 +93,6 @@ if __name__ == '__main__':
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
-        sendMessage(num, name, webbrowser)
+        sendMessage(num, name, data['msg'], webbrowser)
 
     webbrowser.close()  # close browser
