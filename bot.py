@@ -18,6 +18,7 @@ def startMessage(message):
 
 @bot.message_handler(commands=['stop'])
 def stopBot(message):
+    bot.reply_to(message, 'good bye cruel world')
     bot.stop_polling()
     exit(0)
 
