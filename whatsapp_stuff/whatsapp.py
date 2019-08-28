@@ -79,7 +79,7 @@ def getData(url, token, ids):
 
     # add names and numbers to respective lists
     for user_id in api_data:
-        if user_id in ids:
+        if int(user_id) in ids:
             names_list.append(api_data[user_id]['name'])
             numbers_list.append(api_data[user_id]['phone'].split('|')[-1])
 

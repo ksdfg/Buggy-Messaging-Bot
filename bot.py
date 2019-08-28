@@ -39,6 +39,13 @@ def startBot(message):
     bot.reply_to(message, 'hello ladiez')
 
 
+@bot.message_handler(commands=['die'])
+def stopBot(message):
+    bot.reply_to(message, 'Commiting suicide then....\nGood bye cruel world')
+
+    exit(0)
+
+
 @bot.message_handler(commands=['say'])
 def echo(message):
     bot.send_message(message.chat.id, normalise(message.text))
@@ -84,8 +91,8 @@ def startWhatsapp(message):
 
     # get data from our API
     names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
-    names.append('ksdfg')
-    numbers.append(9011152660)
+
+    bot.send_message(message.chat.id, 'names = \n'+str(names))
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
