@@ -71,17 +71,17 @@ def getData(url, token, ids):
     names_list = []  # list of all names
     numbers_list = []  # list of all numbers
 
-    # get data from heroku
-    heroku_data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
+    # get data from our API
+    api_data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
 
     if ids == 'all':
-        ids = heroku_data.keys()
+        ids = api_data.keys()
 
     # add names and numbers to respective lists
-    for user_id in heroku_data:
+    for user_id in api_data:
         if user_id in ids:
-            names_list.append(heroku_data[user_id]['name'])
-            numbers_list.append(heroku_data[user_id]['phone'].split('|')[-1])
+            names_list.append(api_data[user_id]['name'])
+            numbers_list.append(api_data[user_id]['phone'].split('|')[-1])
 
     return names_list, numbers_list
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     with open(home + 'data.json', 'r') as f:
         data = json.load(f)
 
-    # get data from heroku
+    # get data from our API
     names, numbers = getData(data['url'], data['auth-token'], data['ids'])
 
     # create a browser instance, login to whatsapp (one time per run)

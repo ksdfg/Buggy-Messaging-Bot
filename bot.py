@@ -62,7 +62,7 @@ def startWhatsapp(message):
     # wait till the text box is loaded onto the screen
     meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
-    # get data from heroku
+    # get data from our API
     names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
     # send messages to all entries in file
