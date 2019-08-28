@@ -12,8 +12,6 @@ bot = telebot.TeleBot(data['bot-token'])
 @bot.message_handler(commands=['start'])
 def startMessage(message):
     bot.reply_to(message, 'hello ladiez')
-    with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
-        bot.send_photo(data['chat-id'], qr)
 
 
 @bot.message_handler(commands=['stop'])
@@ -25,8 +23,9 @@ def stopBot(message):
 @bot.message_handler(commands=['whatsapp'])
 def startWhatsapp(message):
     browser = meow.startSession()
+    browser.minimize_window()
     with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
-        bot.send_photo(data['chat-id'], qr)
+        bot.send_photo(message.from_user.id, qr)
     input('meow')
     browser.close()
 
