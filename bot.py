@@ -1,11 +1,11 @@
 import json
-from collections import defaultdict as dd
 import os
-from os import environ
 import re
+from collections import defaultdict as dd
+from os import environ
 
 import telebot
-from emoji import demojize, emojize
+from emoji import demojize
 
 import whatsapp_stuff.whatsapp as meow
 
@@ -71,8 +71,6 @@ def startWhatsapp(message):
             demojize(normalise(message.text)) + '\n' +
             '- Team SCRIPT :v:\n'
     )
-
-    bot.send_message(message.chat.id, emojize(msg))
 
     bot.reply_to(message, 'Please wait while we fetch the qr code...')
 

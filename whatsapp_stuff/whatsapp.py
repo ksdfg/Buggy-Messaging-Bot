@@ -84,37 +84,3 @@ def getData(url, token, ids):
             numbers_list.append(api_data[user_id]['phone'].split('|')[-1])
 
     return names_list, numbers_list
-
-
-if __name__ == '__main__':
-
-    if os.path.exists(r'whatsapp_stuff\data.json'):
-        with open(r'whatsapp_stuff\data.json', 'r') as f:
-            data = json.load(f)
-    else:
-        try:
-            data = {
-                'auth-token': os.environ['AUTH_TOKEN'],
-                'bot-token': os.environ['BOT_TOKEN'],
-                'browser': os.environ['BROWSER'],
-                'url': os.environ['API_URL']
-            }
-        except KeyError:
-            print("You don't have configuration JSON or environment variables set, go away")
-            exit(1)
-
-    # get data from our API
-    names, numbers = getData(data['url'], data['auth-token'], data['ids'])
-
-    # create a browser instance, login to whatsapp (one time per run)
-    webbrowser = startSession(data['browser'])
-
-    # wait till the text box is loaded onto the screen
-    waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
-
-    # send messages to all entries in file
-    with open(home + 'msg.txt', 'r') as msg:
-        for num, name in zip(numbers, names):
-            sendMessage(num, name, msg.read(), webbrowser)
-
-    webbrowser.close()  # close browser
