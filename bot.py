@@ -31,7 +31,7 @@ ids = dd(lambda: [])
 
 
 def normalise(txt):
-    return re.sub('^/\w+ ', '', txt)
+    return re.sub('^/\w+[ ,\n]', '', txt)
 
 
 @bot.message_handler(commands=['start'])
@@ -41,7 +41,6 @@ def startBot(message):
 
 @bot.message_handler(commands=['say'])
 def echo(message):
-    print(bot.get_me().username)
     bot.send_message(message.chat.id, normalise(message.text))
 
 
@@ -85,6 +84,8 @@ def startWhatsapp(message):
 
     # get data from our API
     names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
+    names.append('ksdfg')
+    numbers.append(9011152660)
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
