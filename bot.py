@@ -15,16 +15,21 @@ ids = dd(lambda: [])
 
 
 @bot.message_handler(commands=['start'])
-def startMessage(message):
+def startBot(message):
     bot.reply_to(message, 'hello ladiez')
 
 
-@bot.message_handler(commands=['stop'])
+@bot.message_handler(commands=['die'])
 def stopBot(message):
     bot.reply_to(message, 'suicide in progress...')
     bot.stop_polling()
     bot.send_message(message.chat.id, 'good bye cruel world')
     exit(0)
+
+
+@bot.message_handler(commands=['say'])
+def echo(message):
+    bot.send_message(message.chat.id, message.text[5:])
 
 
 @bot.message_handler(commands=['setids'])
