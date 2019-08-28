@@ -30,10 +30,7 @@ def stopBot(message):
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
     try:
-        if message.text[8:] == 'all':
-            ids['key'] = 'all'
-        else:
-            ids['key'] = list(map(int, message.text[8:].split()))
+        ids['key'] = 'all' if message.text[8:] == 'all' else list(map(int, message.text[8:].split()))
         bot.reply_to(message, str(ids['key']))
     except:
         bot.reply_to(message, 'invalid ids')
