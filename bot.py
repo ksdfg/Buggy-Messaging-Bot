@@ -1,8 +1,9 @@
 import json
 from collections import defaultdict as dd
+import re
 
 import telebot
-from emoji import demojize
+from emoji import demojize, emojize
 
 import whatsapp_stuff.whatsapp as meow
 
@@ -14,6 +15,10 @@ bot = telebot.TeleBot(data['bot-token'])
 ids = dd(lambda: [])
 
 
+def normalise(txt):
+    return re.sub('^/.+ ', '', txt)
+
+
 @bot.message_handler(commands=['start'])
 def startBot(message):
     bot.reply_to(message, 'hello ladiez')
@@ -21,7 +26,8 @@ def startBot(message):
 
 @bot.message_handler(commands=['say'])
 def echo(message):
-    bot.send_message(message.chat.id, message.text[5:])
+    print(bot.get_me().username)
+    bot.send_message(message.chat.id, normalise(message.text))
 
 
 @bot.message_handler(commands=['coolcoolcoolcoolcool'])
@@ -32,7 +38,8 @@ def peralta(message):
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
     try:
-        ids['nyan'] = 'all' if message.text[8:] == 'all' else list(map(int, message.text[8:].split()))
+        ids['nyan'] = 'all' if normalise(message.text) == 'all' \
+            else list(map(int, normalise(message.text).split()))
         bot.reply_to(message, str(ids['nyan']))
     except:
         bot.reply_to(message, 'invalid ids')
@@ -47,9 +54,11 @@ def showIDs(message):
 def startWhatsapp(message):
     msg = (
             'Hey, {} :wave:\n' +
-            demojize(message.text[10:]) + '\n' +
+            demojize(normalise(message.text)) + '\n' +
             '- Team SCRIPT :v:\n'
     )
+
+    bot.send_message(message.chat.id, emojize(msg))
 
     bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
