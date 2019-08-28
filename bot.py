@@ -22,7 +22,7 @@ def stopBot(message):
 
 @bot.message_handler(commands=['whatsapp'])
 def startWhatsapp(message):
-    browser = meow.startSession()
+    browser = meow.startSession(data['browser'])
     browser.minimize_window()
     with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
         bot.send_photo(message.from_user.id, qr)

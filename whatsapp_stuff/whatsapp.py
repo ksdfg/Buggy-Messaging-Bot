@@ -44,8 +44,8 @@ def sendMessage(num, name, msg, browser):
     sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
-def startSession():
-    browser = webdriver.Firefox(executable_path=home + 'geckodriver.exe')
+def startSession(browser_type):
+    browser = webdriver.Firefox(executable_path=home + browser_type + '.exe')
     browser.get('https://web.whatsapp.com/')
 
     # get the qr image
@@ -86,7 +86,7 @@ if __name__ == '__main__':
     names, numbers = getData(data['url'], data['auth-token'])
 
     # create a browser instance, login to whatsapp (one time per run)
-    webbrowser = startSession()
+    webbrowser = startSession(data['browser'])
 
     # wait till the text box is loaded onto the screen
     waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
