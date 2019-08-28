@@ -33,6 +33,14 @@ def startWhatsapp(message):
     # wait till the text box is loaded onto the screen
     meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
+    # get data from heroku
+    names, numbers = meow.getData(data['url'], data['auth-token'])
+
+    # send messages to all entries in file
+    with open(r'whatsapp_Stuff\msg.txt', 'r') as msg:
+        for num, name in zip(numbers, names):
+            meow.sendMessage(num, name, f.read(), browser)
+
     with open(r'whatsapp_stuff\msg.txt', 'r') as msg:
         meow.sendMessage(9011152660, 'ksdfg', msg.read(), browser)
 
