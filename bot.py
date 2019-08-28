@@ -21,8 +21,9 @@ def startMessage(message):
 
 @bot.message_handler(commands=['stop'])
 def stopBot(message):
-    bot.reply_to(message, 'good bye cruel world')
+    bot.reply_to(message, 'suicide in progress...')
     bot.stop_polling()
+    bot.send_message(message.chat.id, 'good bye cruel world')
     exit(0)
 
 
