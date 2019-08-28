@@ -30,15 +30,15 @@ def stopBot(message):
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
     try:
-        ids['key'] = 'all' if message.text[8:] == 'all' else list(map(int, message.text[8:].split()))
-        bot.reply_to(message, str(ids['key']))
+        ids['nyan'] = 'all' if message.text[8:] == 'all' else list(map(int, message.text[8:].split()))
+        bot.reply_to(message, str(ids['nyan']))
     except:
         bot.reply_to(message, 'invalid ids')
 
 
 @bot.message_handler(commands=['showids'])
 def showIDs(message):
-    bot.reply_to(message, str(ids['key']))
+    bot.reply_to(message, str(ids['nyan']))
 
 
 @bot.message_handler(commands=['whatsapp'])
@@ -61,7 +61,7 @@ def startWhatsapp(message):
     meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
     # get data from heroku
-    names, numbers = meow.getData(data['url'], data['auth-token'], data['ids'])
+    names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
