@@ -1,9 +1,9 @@
 import json
 
 import telebot
+from emoji import demojize
 
 import whatsapp_stuff.whatsapp as meow
-from emoji import demojize
 
 with open(r'whatsapp_stuff\data.json', 'r') as f:
     data = json.load(f)
@@ -50,7 +50,7 @@ def startWhatsapp(message):
     browser.minimize_window()
 
     with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
-        bot.send_photo(message.from_user.id, qr)
+        bot.send_photo(message.chat.id, qr)
 
     # wait till the text box is loaded onto the screen
     meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
@@ -64,7 +64,7 @@ def startWhatsapp(message):
 
     browser.close()
 
-    bot.send_message(message.from_user.id, 'Messages sent!')
+    bot.send_message(message.chat.id, 'Messages sent!')
     print('done')
 
 
