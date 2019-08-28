@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict as dd
 
 import telebot
 from emoji import demojize
@@ -9,6 +10,8 @@ with open(r'whatsapp_stuff\data.json', 'r') as f:
     data = json.load(f)
 
 bot = telebot.TeleBot(data['bot-token'])
+
+ids = dd(lambda: [])
 
 
 @bot.message_handler(commands=['start'])
@@ -26,15 +29,18 @@ def stopBot(message):
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
     try:
-        data['ids'] = list(map(int, message.text[8:].split()))
-        bot.reply_to(message, str(data['ids']))
+        if message.text[8:] == 'all':
+            ids['key'] = 'all'
+        else:
+            ids['key'] = list(map(int, message.text[8:].split()))
+        bot.reply_to(message, str(ids['key']))
     except:
         bot.reply_to(message, 'invalid ids')
 
 
 @bot.message_handler(commands=['showids'])
 def showIDs(message):
-    bot.reply_to(message, str(data['ids']))
+    bot.reply_to(message, str(ids['key']))
 
 
 @bot.message_handler(commands=['whatsapp'])
@@ -68,5 +74,7 @@ def startWhatsapp(message):
     bot.send_message(message.chat.id, 'Messages sent!')
     print('done')
 
+
+print('start')
 
 bot.polling()
