@@ -97,7 +97,8 @@ if __name__ == '__main__':
     waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
     # send messages to all entries in file
-    for num, name in zip(numbers, names):
-        sendMessage(num, name, data['msg'], webbrowser)
+    with open(home + 'msg.txt', 'r') as msg:
+        for num, name in zip(numbers, names):
+            sendMessage(num, name, f.read(), webbrowser)
 
     webbrowser.close()  # close browser
