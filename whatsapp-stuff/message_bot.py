@@ -11,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-import heroku
+from . import heroku
 
 whatsapp_api = (
     'https://api.whatsapp.com/send?phone=91'
@@ -19,7 +19,10 @@ whatsapp_api = (
 
 # what to send
 message = (
-    'insert message here'
+    'Hey, {} :wave:\n'
+    'This is the script bot 🤖 informing you that you have been selected for the Personal Interview round! :tada: '
+    'Timing and location of the interview will be communicated to you later by mail :sweat_smile:\n'
+    'See you there! :v:\n- Team SCRIPT\n'
 )
 
 
