@@ -50,32 +50,45 @@ def sendMessage(num, name, browser):
     sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
-if __name__ == '__main__':
+def startSession():
+    browser = webdriver.Firefox(executable_path='geckodriver.exe')
+    browser.get('https://web.whatsapp.com/')
 
+    # get the qr image
+    waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img')
+    if os.path.exists('qr.png'):
+        print('removing old qr')
+        os.remove('qr.png')
+    meow = open('qr.png', 'wb')
+    meow.write(base64.b64decode(browser.find_element_by_xpath(
+        '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img').get_attribute('src')[22:]))
+    meow.close()
+
+    return browser
+
+
+def getData(url, token):
     names = []  # list of all names
     numbers = []  # list of all numbers
 
     # get data from heroku
-    data = json.loads(requests.get(heroku.url, headers={'Authorization': heroku.token}, ).text)
+    data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
 
     # add names and numbers to respective lists
     for user_id in data:
         names.append(data[user_id]['name'])
         numbers.append(data[user_id]['phone'].split('|')[-1])
 
-    # create a browser instance, login to whatsapp (one time per run)
-    webbrowser = webdriver.Firefox(executable_path='geckodriver.exe')
-    webbrowser.get('https://web.whatsapp.com/')
+    return names, numbers
 
-    # get the qr image
-    waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img')
-    if os.path.exists('qr.png'):
-        print('removing old qr')
-        os.remove('qr.png')
-    meow = open('qr.png', 'wb')
-    meow.write(base64.b64decode(webbrowser.find_element_by_xpath(
-        '/html/body/div[1]/div/div/div[2]/div[1]/div/div[2]/div/img').get_attribute('src')[22:]))
-    meow.close()
+
+if __name__ == '__main__':
+
+    # get data from heroku
+    names, numbers = getData(heroku.url, heroku.token)
+
+    # create a browser instance, login to whatsapp (one time per run)
+    webbrowser = startSession()
 
     # wait till the text box is loaded onto the screen
     waitTillElementLoaded(webbrowser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
