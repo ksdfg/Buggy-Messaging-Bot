@@ -1,6 +1,6 @@
 # whatsapp-bot
 
-this is a telegram bot that sends messages to multiple whatsapp users at once.
+This is a Telegram bot that sends messages to multiple WhatsApp users at once.
 
 - It retrieves list of recipients from upstream (any API returning a JSON response)
 
