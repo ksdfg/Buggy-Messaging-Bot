@@ -20,7 +20,8 @@ else:
             'bot-token': environ['BOT_TOKEN'],
             'browser': environ['BROWSER'],
             'driver-path': environ['DRIVER_PATH'],
-            'url': environ['API_URL']
+            'url': environ['API_URL'],
+            'whitelist': environ['WHITELIST']
         }
     except KeyError:
         print("You don't have configuration JSON or environment variables set, go away")
@@ -30,6 +31,10 @@ else:
 bot = telebot.TeleBot(data['bot-token'])
 
 ids = dd(lambda: [])
+
+
+def authorized(id):
+    return id in data['whitelist']
 
 
 def normalise(txt):
@@ -53,56 +58,68 @@ def peralta(message):
 
 @bot.message_handler(commands=['showurl'])
 def showURL(message):
-    bot.reply_to(message, data['url'])
+    if authorized(message.from_user.id):
+        bot.reply_to(message, data['url'])
+    else:
+        bot.reply_to(message, "Noob")
 
 
 @bot.message_handler(commands=['setids'])
 def setIDs(message):
-    try:
-        ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
-        bot.reply_to(message, str(ids['nyan']))
-    except:
-        bot.reply_to(message, 'invalid ids')
+    if authorized(message.from_user.id):
+        try:
+            ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
+            bot.reply_to(message, str(ids['nyan']))
+        except:
+            bot.reply_to(message, 'invalid ids')
+    else:
+        bot.reply_to(message, "Noob")
 
 
 @bot.message_handler(commands=['showids'])
 def showIDs(message):
-    bot.reply_to(message, str(ids['nyan']))
+    if authorized(message.from_user.id):
+        bot.reply_to(message, str(ids['nyan']))
+    else:
+        bot.reply_to(message, "Noob")
 
 
 @bot.message_handler(commands=['whatsapp'])
 def startWhatsapp(message):
-    msg = (
-            'Hey, {} :wave:\n' +
-            demojize(normalise(message.text)) + '\n' +
-            '- Team SCRIPT :v:\n'
-    )
+    if authorized(message.from_user.id):
+        msg = (
+                'Hey, {} :wave:\n' +
+                demojize(normalise(message.text)) + '\n' +
+                '- Team SCRIPT :v:\n'
+        )
 
-    bot.reply_to(message, 'Please wait while we fetch the qr code...')
+        bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
-    browser = meow.startSession(data['browser'])
+        browser = meow.startSession(data['browser'])
 
-    with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
-        bot.send_photo(message.chat.id, qr)
+        with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
+            bot.send_photo(message.chat.id, qr)
 
-    # wait till the text box is loaded onto the screen
-    meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
+        # wait till the text box is loaded onto the screen
+        meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
-    # get data from our API
-    names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
+        # get data from our API
+        names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
-    dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
+        dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
 
-    bot.send_message(message.chat.id, 'https://del.dog/{}'.format(dogbin_key))
+        bot.send_message(message.chat.id, 'https://del.dog/{}'.format(dogbin_key))
 
-    # send messages to all entries in file
-    for num, name in zip(numbers, names):
-        meow.sendMessage(num, name, msg, browser)
+        # send messages to all entries in file
+        for num, name in zip(numbers, names):
+            meow.sendMessage(num, name, msg, browser)
 
-    browser.close()
+        browser.close()
 
-    bot.send_message(message.chat.id, 'Messages sent!')
-    print('done')
+        bot.send_message(message.chat.id, 'Messages sent!')
+        print('done')
+    else:
+        bot.reply_to(message, "Noob")
 
 
 print('start')
