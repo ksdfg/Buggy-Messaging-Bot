@@ -19,6 +19,7 @@ else:
             'auth-token': environ['AUTH_TOKEN'],
             'bot-token': environ['BOT_TOKEN'],
             'browser': environ['BROWSER'],
+            'driver-path': environ['DRIVER_PATH'],
             'url': environ['API_URL']
         }
     except KeyError:
