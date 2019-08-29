@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import requests
 from collections import defaultdict as dd
 from os import environ
 
@@ -91,7 +92,9 @@ def startWhatsapp(message):
     # get data from our API
     names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
-    bot.send_message(message.chat.id, 'names = \n'+str(names))
+    dogbin_url = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
+
+    bot.send_message(message.chat.id, 'https://del.dog/{}')
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
