@@ -22,7 +22,7 @@ else:
             'browser': environ['BROWSER'],
             'driver-path': environ['DRIVER_PATH'],
             'url': environ['API_URL'],
-            'whitelist': environ['WHITELIST']
+            'whitelist': environ['WHITELIST'].split(',')
         }
     except KeyError:
         print("You don't have configuration JSON or environment variables set, go away")
