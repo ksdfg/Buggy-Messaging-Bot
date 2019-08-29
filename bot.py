@@ -10,7 +10,7 @@ from emoji import demojize
 
 import whatsapp_stuff.whatsapp as meow
 
-# get config data from json / env
+# Get config data from json / env
 if os.path.exists(r'whatsapp_stuff/data.json'):
     with open(r'whatsapp_stuff/data.json', 'r') as f:
         data = json.load(f)
@@ -28,77 +28,77 @@ else:
         print("You don't have configuration JSON or environment variables set, go away")
         exit(1)
 
-bot = telebot.TeleBot(data['bot-token'])  # create bot object
+bot = telebot.TeleBot(data['bot-token'])  # Create bot object
 
-ids = dd(lambda: [])  # list of ids to send message to
+ids = dd(lambda: [])  # List of ids to send message to
 
 
-# decorator for apiorizing ids that send certain commands
+# Decorator for apiorizing ids that send certain commands
 def needs_authorization(func):
     def inner(message):
         if message.from_user.id in data['whitelist']:
             func(message)
         else:
-            bot.reply_to(message, "I don't take orders from you, " + message.from_user.first_name)  # lol
+            bot.reply_to(message, "I don't take orders from you, " + message.from_user.first_name)  # Lol
 
     return inner
 
 
 def normalise(txt):
-    return re.sub('^/\w+[ ,\n]', '', txt)  # to remove the /command@botname from message.text
+    return re.sub('^/\w+[ ,\n]', '', txt)  # To remove the /command@botname from message.text
 
 
-# just to get ids of ppl to add to whitelist
+# Just to get ids of ppl to add to whitelist
 @bot.message_handler(commands=['id'])
 def id(message):
     bot.reply_to(message, 'Your ID is {}'.format(message.from_user.id))
 
 
-# parikshit mode on
+# Parikshit mode on
 @bot.message_handler(commands=['start'])
 def startBot(message):
     bot.reply_to(message, 'hello ladiez')
 
 
-# echo the same message back to the caller - just for fun
+# Echo the same message back to the caller - just for fun
 @bot.message_handler(commands=['echo'])
 @needs_authorization
 def echo(message):
     bot.send_message(message.chat.id, normalise(message.text))
 
 
-# brooklyn nine-nine needs more seasons
+# Brooklyn nine-nine needs more seasons
 @bot.message_handler(commands=['coolcoolcoolcoolcool'])
 def peralta(message):
     bot.reply_to(message, 'nodoubtnodoubtnodoubtnodoubtnodoubt')
 
 
-# responds to caller with the current api url from which data is requested
+# Responds to caller with the current api url from which data is requested
 @bot.message_handler(commands=['showurl'])
 def showURL(message):
     bot.reply_to(message, data['url'])
 
 
-# set which user ids will get the message once whatsapp is run
+# Set which user ids will get the message once whatsapp is run
 @bot.message_handler(commands=['setids'])
 @needs_authorization
 def setIDs(message):
     try:
-        # set to all - it will send to all user_ids fetched from api call to url
+        # Set to all - it will send to all user_ids fetched from api call to url
         ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
         bot.reply_to(message, str(ids['nyan']))
     except:
         bot.reply_to(message, 'invalid ids')
 
 
-# responds to caller with the current list of names to whom message is to be sent
+# Responds to caller with the current list of names to whom message is to be sent
 @bot.message_handler(commands=['showlist'])
 def showlist(message):
     names, _ = meow.getData(data['url'], data['api-token'], ids['nyan'])
     bot.reply_to(message, 'names -\n\n' + '\n'.join(names))
 
 
-# start sending whatsapp message
+# Start sending whatsapp message
 @bot.message_handler(commands=['whatsapp'])
 @needs_authorization
 def startWhatsapp(message):
@@ -116,38 +116,38 @@ def startWhatsapp(message):
 
     bot.reply_to(message, 'Please wait while we fetch the QR code...')
 
-    browser = meow.startSession(data['browser'], data['driver-path'])  # start whatsapp in selenium
+    browser = meow.startSession(data['browser'], data['driver-path'])  # Start whatsapp in selenium
 
-    # send qr to caller's chat
+    # Send qr to caller's chat
     with open(r'whatsapp_stuff/qr.png', 'rb') as qr:
         bot.send_photo(message.from_user.id, qr)
     bot.send_message(message.chat.id, 'The QR code has been sent to ' + message.from_user.first_name)
 
-    # wait till the text box is loaded onto the screen
+    # Wait till the text box is loaded onto the screen
     meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
-    # get data from our API
+    # Get data from our API
     names, numbers = meow.getData(data['url'], data['api-token'], ids['nyan'])
 
-    # save names of who all are gonna get messages in dogbin
+    # Save names of who all are gonna get messages in dogbin
     dogbin_key = json.loads(requests.post("https://del.dog/documents", '\n'.join(names)).content.decode())['key']
 
-    # send the url to dogbin on the chat
+    # Send the url to dogbin on the chat
     bot.send_message(message.chat.id, 'The list of names that are going to get the message can be found at\n'
                                       'https://del.dog/{}'.format(dogbin_key))
 
-    # send messages to all entries in file
+    # Send messages to all entries in file
     for num, name in zip(numbers, names):
         meow.sendMessage(num, name, msg, browser)
 
-    browser.close()  # work done, close selenium
+    browser.close()  # Work done, close selenium
 
-    # send confirmation messages
+    # Send confirmation messages
     bot.send_message(message.chat.id, 'Messages sent!')
     print('done')
 
 
-# start ze bot
+# Start ze bot
 
 print('start')
 
