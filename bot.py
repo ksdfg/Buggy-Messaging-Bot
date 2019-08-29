@@ -70,7 +70,7 @@ def peralta(message):
 
 @bot.message_handler(commands=['showurl'])
 def showURL(message):
-        bot.reply_to(message, data['url'])
+    bot.reply_to(message, data['url'])
 
 
 @bot.message_handler(commands=['setids'])
