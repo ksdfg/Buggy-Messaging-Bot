@@ -14,7 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 whatsapp_api = 'https://api.whatsapp.com/send?phone=91'  # format of url to open chat with someone
 
-home = '' if re.match('.+whatsapp_stuff', os.getcwd()) else 'whatsapp_stuff\\'
+home = '' if re.match('.+whatsapp_stuff', os.getcwd()) else 'whatsapp_stuff/'
 
 driver = {
     'firefox': [webdriver.Firefox, 'geckodriver'],
