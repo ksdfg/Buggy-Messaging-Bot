@@ -33,8 +33,14 @@ bot = telebot.TeleBot(data['bot-token'])
 ids = dd(lambda: [])
 
 
-def authorized(id):
-    return id in data['whitelist']
+def needs_authorization(func):
+    def inner(message):
+        if message.from_user.id in data['whitelist']:
+            func(message)
+        else:
+            bot.reply_to(message, 'get rekt noob')
+
+    return inner
 
 
 def normalise(txt):
@@ -52,6 +58,7 @@ def startBot(message):
 
 
 @bot.message_handler(commands=['say'])
+@needs_authorization
 def echo(message):
     bot.send_message(message.chat.id, normalise(message.text))
 
@@ -63,70 +70,59 @@ def peralta(message):
 
 @bot.message_handler(commands=['showurl'])
 def showURL(message):
-    if authorized(message.from_user.id):
         bot.reply_to(message, data['url'])
-    else:
-        bot.reply_to(message, "Noob")
 
 
 @bot.message_handler(commands=['setids'])
+@needs_authorization
 def setIDs(message):
-    if authorized(message.from_user.id):
-        try:
-            ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
-            bot.reply_to(message, str(ids['nyan']))
-        except:
-            bot.reply_to(message, 'invalid ids')
-    else:
-        bot.reply_to(message, "Noob")
+    try:
+        ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
+        bot.reply_to(message, str(ids['nyan']))
+    except:
+        bot.reply_to(message, 'invalid ids')
 
 
 @bot.message_handler(commands=['showids'])
 def showIDs(message):
-    if authorized(message.from_user.id):
-        bot.reply_to(message, str(ids['nyan']))
-    else:
-        bot.reply_to(message, "Noob")
+    bot.reply_to(message, str(ids['nyan']))
 
 
 @bot.message_handler(commands=['whatsapp'])
+@needs_authorization
 def startWhatsapp(message):
-    if authorized(message.from_user.id):
-        msg = (
-                'Hey, {} :wave:\n' +
-                demojize(normalise(message.text)) + '\n' +
-                '- Team SCRIPT :v:\n'
-        )
+    msg = (
+            'Hey, {} :wave:\n' +
+            demojize(normalise(message.text)) + '\n' +
+            '- Team SCRIPT :v:\n'
+    )
 
-        bot.reply_to(message, 'Please wait while we fetch the qr code...')
+    bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
-        browser = meow.startSession(data['browser'], data['driver-path'])
+    browser = meow.startSession(data['browser'], data['driver-path'])
 
-        with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
-            bot.send_photo(message.chat.id, qr)
+    with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
+        bot.send_photo(message.chat.id, qr)
 
-        # wait till the text box is loaded onto the screen
-        meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
+    # wait till the text box is loaded onto the screen
+    meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
-        # get data from our API
-        names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
+    # get data from our API
+    names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
-        dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
+    dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
 
-        bot.send_message(message.chat.id, 'The list of names that are going to get the message can be found at\n'
-                                          'https://del.dog/{}'.format(dogbin_key))
+    bot.send_message(message.chat.id, 'The list of names that are going to get the message can be found at\n'
+                                      'https://del.dog/{}'.format(dogbin_key))
 
-        # send messages to all entries in file
-        for num, name in zip(numbers, names):
-            meow.sendMessage(num, name, msg, browser)
+    # send messages to all entries in file
+    for num, name in zip(numbers, names):
+        meow.sendMessage(num, name, msg, browser)
 
-        browser.close()
+    browser.close()
 
-        bot.send_message(message.chat.id, 'Messages sent!')
-        print('done')
-
-    else:
-        bot.reply_to(message, "Noob")
+    bot.send_message(message.chat.id, 'Messages sent!')
+    print('done')
 
 
 print('start')
