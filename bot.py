@@ -41,6 +41,11 @@ def normalise(txt):
     return re.sub('^/\w+[ ,\n]', '', txt)
 
 
+@bot.message_handler(commands=['id'])
+def id(message):
+    bot.reply_to(message, 'Your ID is {}'.format(message.from_user.id))
+
+
 @bot.message_handler(commands=['start'])
 def startBot(message):
     bot.reply_to(message, 'hello ladiez')
