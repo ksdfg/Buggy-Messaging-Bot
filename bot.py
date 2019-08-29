@@ -81,7 +81,6 @@ def startWhatsapp(message):
     bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
     browser = meow.startSession(data['browser'])
-    browser.minimize_window()
 
     with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
         bot.send_photo(message.chat.id, qr)

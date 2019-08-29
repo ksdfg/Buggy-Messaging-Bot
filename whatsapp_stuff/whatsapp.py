@@ -75,7 +75,7 @@ def getData(url, token, ids):
     api_data = json.loads(requests.get(url, headers={'Authorization': token}, ).text)
 
     if ids == 'all':
-        ids = api_data.keys()
+        ids = map(int, api_data.keys())
 
     # add names and numbers to respective lists
     for user_id in api_data:
