@@ -40,13 +40,6 @@ def startBot(message):
     bot.reply_to(message, 'hello ladiez')
 
 
-@bot.message_handler(commands=['die'])
-def stopBot(message):
-    bot.reply_to(message, 'Commiting suicide then....\nGood bye cruel world')
-
-    exit(0)
-
-
 @bot.message_handler(commands=['say'])
 def echo(message):
     bot.send_message(message.chat.id, normalise(message.text))
@@ -55,6 +48,11 @@ def echo(message):
 @bot.message_handler(commands=['coolcoolcoolcoolcool'])
 def peralta(message):
     bot.reply_to(message, 'nodoubtnodoubtnodoubtnodoubtnodoubt')
+
+
+@bot.message_handler(commands=['showurl'])
+def showURL(message):
+    bot.reply_to(message, data['url'])
 
 
 @bot.message_handler(commands=['setids'])
@@ -92,9 +90,9 @@ def startWhatsapp(message):
     # get data from our API
     names, numbers = meow.getData(data['url'], data['auth-token'], ids['nyan'])
 
-    dogbin_url = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
+    dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
 
-    bot.send_message(message.chat.id, 'https://del.dog/{}')
+    bot.send_message(message.chat.id, 'https://del.dog/{}'.format(dogbin_key))
 
     # send messages to all entries in file
     for num, name in zip(numbers, names):
