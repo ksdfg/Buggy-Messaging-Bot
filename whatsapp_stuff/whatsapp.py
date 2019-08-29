@@ -17,8 +17,8 @@ whatsapp_api = 'https://api.whatsapp.com/send?phone=91'  # format of url to open
 home = '' if re.match('.+whatsapp_stuff', os.getcwd()) else 'whatsapp_stuff/'
 
 driver = {
-    'firefox': [webdriver.Firefox, 'geckodriver'],
-    'chrome': [webdriver.Chrome, 'chromedriver']
+    'firefox': webdriver.Firefox,
+    'chrome': webdriver.Chrome
 }
 
 
@@ -50,7 +50,7 @@ def sendMessage(num, name, msg, browser):
 
 
 def startSession(browser_type, driver_path):
-    browser = driver[browser_type][0](executable_path=driver_path)
+    browser = driver[browser_type](executable_path=driver_path)
     browser.get('https://web.whatsapp.com/')
 
     # get the qr image
