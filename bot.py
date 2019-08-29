@@ -1,10 +1,10 @@
 import json
 import os
 import re
-import requests
 from collections import defaultdict as dd
 from os import environ
 
+import requests
 import telebot
 from emoji import demojize
 
@@ -100,7 +100,7 @@ def startWhatsapp(message):
 
         bot.reply_to(message, 'Please wait while we fetch the qr code...')
 
-        browser = meow.startSession(data['browser'])
+        browser = meow.startSession(data['browser'], data['driver-path'])
 
         with open(r'whatsapp_stuff\qr.png', 'rb') as qr:
             bot.send_photo(message.chat.id, qr)
@@ -113,7 +113,8 @@ def startWhatsapp(message):
 
         dogbin_key = json.loads(requests.post("https://del.dog/documents", names).content.decode())['key']
 
-        bot.send_message(message.chat.id, 'https://del.dog/{}'.format(dogbin_key))
+        bot.send_message(message.chat.id, 'The list of names that are going to get the message can be found at\n'
+                                          'https://del.dog/{}'.format(dogbin_key))
 
         # send messages to all entries in file
         for num, name in zip(numbers, names):
@@ -123,6 +124,7 @@ def startWhatsapp(message):
 
         bot.send_message(message.chat.id, 'Messages sent!')
         print('done')
+
     else:
         bot.reply_to(message, "Noob")
 

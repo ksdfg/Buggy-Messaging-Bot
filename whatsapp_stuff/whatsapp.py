@@ -49,8 +49,8 @@ def sendMessage(num, name, msg, browser):
     sleep(3)  # just so that we can supervise, otherwise it's too fast
 
 
-def startSession(browser_type):
-    browser = driver[browser_type][0](executable_path=home + driver[browser_type][1] + '.exe')
+def startSession(browser_type, driver_path):
+    browser = driver[browser_type][0](executable_path=driver_path)
     browser.get('https://web.whatsapp.com/')
 
     # get the qr image
