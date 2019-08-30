@@ -21,6 +21,7 @@ else:
             'bot-token': environ['BOT_TOKEN'],
             'browser': environ['BROWSER'],
             'driver-path': environ['DRIVER_PATH'],
+            'notify-id': environ['NOTIFY_ID'],
             'url': environ['API_URL'],
             'whitelist': environ['WHITELIST'].split(',')
         }
@@ -163,5 +164,5 @@ def startWhatsapp(message):
 # Start ze bot
 
 print('start')
-bot.send_message('-349698878', 'Bot started')
+bot.send_message(data['notify-id'], 'Bot started')
 bot.polling()
