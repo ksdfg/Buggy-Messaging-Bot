@@ -48,6 +48,8 @@ def sendMessage(num, name, msg, browser):
 
     sleep(3)  # Just so that we can supervise, otherwise it's too fast
 
+    return name
+
 
 def startSession(browser_type, driver_path):
     browser = driver[browser_type](executable_path=driver_path)

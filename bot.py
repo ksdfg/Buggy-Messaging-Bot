@@ -48,10 +48,17 @@ def normalise(txt):
     return re.sub('^/\w+[ ,\n]', '', txt)  # To remove the /command@botname from message.text
 
 
+def dogbin(content):
+    # Save names of who all are gonna get messages in dogbin
+    return 'https://del.dog/{}'.format(json.loads(requests.post("https://del.dog/documents",
+                                                                content).content.decode())['key'])
+
+
 # Just to get ids of ppl to add to whitelist
 @bot.message_handler(commands=['id'])
 def id(message):
     bot.reply_to(message, 'Your ID is {}'.format(message.from_user.id))
+    bot.reply_to(message, 'The group ID is {}'.format(message.chat.id))
 
 
 # Parikshit mode on
@@ -95,7 +102,8 @@ def setIDs(message):
 @bot.message_handler(commands=['showlist'])
 def showlist(message):
     names, _ = meow.getData(data['url'], data['api-token'], ids['nyan'])
-    bot.reply_to(message, 'names -\n\n' + '\n'.join(names))
+    bot.reply_to(message, 'The list of names to whom the message will be sent can be found at\n' +
+                 dogbin('\n'.join(names)))
 
 
 # Start sending whatsapp message
@@ -116,40 +124,43 @@ def startWhatsapp(message):
 
     bot.reply_to(message, 'Please wait while we fetch the QR code...')
 
-    browser = meow.startSession(data['browser'], data['driver-path'])  # Start whatsapp in selenium
+    messages_sent_to = []
 
-    # Send qr to caller's chat
-    with open(r'whatsapp_stuff/qr.png', 'rb') as qr:
-        bot.send_photo(message.from_user.id, qr)
-    bot.send_message(message.chat.id, 'The QR code has been sent to ' + message.from_user.first_name)
+    try:
+        browser = meow.startSession(data['browser'], data['driver-path'])  # Start whatsapp in selenium
 
-    # Wait till the text box is loaded onto the screen
-    meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
+        # Send qr to caller's chat
+        with open(r'whatsapp_stuff/qr.png', 'rb') as qr:
+            bot.send_photo(message.from_user.id, qr)
+        bot.send_message(message.chat.id, 'The QR code has been sent to ' + message.from_user.first_name)
 
-    # Get data from our API
-    names, numbers = meow.getData(data['url'], data['api-token'], ids['nyan'])
+        # Wait till the text box is loaded onto the screen
+        meow.waitTillElementLoaded(browser, '/html/body/div[1]/div/div/div[4]/div/div/div[1]')
 
-    # Save names of who all are gonna get messages in dogbin
-    dogbin_key = json.loads(requests.post("https://del.dog/documents", '\n'.join(names)).content.decode())['key']
+        # Get data from our API
+        names, numbers = meow.getData(data['url'], data['api-token'], ids['nyan'])
 
-    # Send the url to dogbin on the chat
-    bot.send_message(message.chat.id, 'The list of names that are going to get the message can be found at\n'
-                                      'https://del.dog/{}'.format(dogbin_key))
+        # Send messages to all entries in file
+        for num, name in zip(numbers, names):
+            messages_sent_to.append(meow.sendMessage(num, name, msg, browser))
 
-    # Send messages to all entries in file
-    for num, name in zip(numbers, names):
-        meow.sendMessage(num, name, msg, browser)
+        browser.close()  # Work done, close selenium
 
-    browser.close()  # Work done, close selenium
+        # Send confirmation messages
+        bot.send_message(message.chat.id, 'Messages sent!')
+        print('done')
 
-    # Send confirmation messages
-    bot.send_message(message.chat.id, 'Messages sent!')
-    print('done')
+    except:
+        bot.send_message(message.chat.id, 'Houston, there is a problem')
+
+    finally:
+        # Send the url to dogbin on the chat
+        bot.send_message(message.chat.id, 'The list of names to whom the message was sent can be found at\n' +
+                         dogbin('\n'.join(messages_sent_to)))
 
 
 # Start ze bot
 
 print('start')
-
 bot.send_message('-349698878', 'Bot started')
 bot.polling()
