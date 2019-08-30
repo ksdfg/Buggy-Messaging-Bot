@@ -33,7 +33,7 @@ bot = telebot.TeleBot(data['bot-token'])  # Create bot object
 ids = dd(lambda: [])  # List of ids to send message to
 
 
-# Decorator for apiorizing ids that send certain commands
+# Decorator for authorizing ids that send certain commands
 def needs_authorization(func):
     def inner(message):
         if message.from_user.id in data['whitelist']:
