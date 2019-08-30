@@ -36,7 +36,7 @@ ids = dd(lambda: [])  # List of ids to send message to
 # Decorator for authorizing ids that send certain commands
 def needs_authorization(func):
     def inner(message):
-        if message.from_user.id in data['whitelist']:
+        if str(message.from_user.id) in data['whitelist']:
             func(message)
         else:
             bot.reply_to(message, "I don't take orders from you, " + message.from_user.first_name)  # Lol
