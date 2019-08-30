@@ -67,7 +67,7 @@ def echo(message):
     bot.send_message(message.chat.id, normalise(message.text))
 
 
-# Brooklyn nine-nine needs more seasons
+# Brooklyn Nine-Nine needs more seasons
 @bot.message_handler(commands=['coolcoolcoolcoolcool'])
 def peralta(message):
     bot.reply_to(message, 'nodoubtnodoubtnodoubtnodoubtnodoubt')
@@ -79,12 +79,12 @@ def showURL(message):
     bot.reply_to(message, data['url'])
 
 
-# Set which user ids will get the message once whatsapp is run
+# Set which user ids will get the message once WhatsApp is run
 @bot.message_handler(commands=['setids'])
 @needs_authorization
 def setIDs(message):
     try:
-        # Set to all - it will send to all user_ids fetched from api call to url
+        # Set to all - it will send to all user_ids fetched from API call to URL
         ids['nyan'] = 'all' if normalise(message.text) == 'all' else list(map(int, normalise(message.text).split()))
         bot.reply_to(message, str(ids['nyan']))
     except:
