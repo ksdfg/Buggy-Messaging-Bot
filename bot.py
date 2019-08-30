@@ -151,4 +151,5 @@ def startWhatsapp(message):
 
 print('start')
 
+bot.send_message('-349698878', 'Bot started')
 bot.polling()
