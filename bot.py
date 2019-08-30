@@ -40,7 +40,7 @@ def needs_authorization(func):
         if str(message.from_user.id) in data['whitelist']:
             func(message)
         else:
-            bot.reply_to(message, "I don't take orders from you, " + message.from_user.first_name)  # Lol
+            bot.kick_chat_member(message.chat.id, message.from_user.id)  # Lol
 
     return inner
 
