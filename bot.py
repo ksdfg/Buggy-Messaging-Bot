@@ -3,6 +3,7 @@ import os
 import re
 from collections import defaultdict as dd
 from os import environ
+from time import sleep
 
 import requests
 import telebot
@@ -40,6 +41,10 @@ def needs_authorization(func):
         if str(message.from_user.id) in data['whitelist']:
             func(message)
         else:
+            bot.reply_to(message, 'Kicking this idiot out in')
+            for i in range(5):
+                bot.send_message(message.chat.id, str(5-i))
+                sleep(0.5)
             bot.kick_chat_member(message.chat.id, message.from_user.id)  # Lol
 
     return inner
