@@ -1,4 +1,4 @@
-# whatsapp-bot
+# script-bot
 
 This is a Telegram bot that sends messages to multiple WhatsApp users at once.
 
