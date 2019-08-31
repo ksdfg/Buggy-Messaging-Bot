@@ -78,7 +78,26 @@ def startBot(message):
 @bot.message_handler(commands=['echo'])
 @needs_authorization
 def echo(message):
-    bot.send_message(message.chat.id, normalise(message.text))
+    if "give" in normalise(message.text).lower():
+        bot.reply_to(message, "Get this man a \""
+                     + normalise(message.text).casefold().strip('give ') + "\"")   # Avengers reference XD
+        for _ in range(5):
+            sleep(60)
+            bot.send_message(message.chat.id, "Give {} \"".format(message.from_user.first_name)
+                             + normalise(message.text).casefold().strip('give ') + "\"")
+    else:
+        bot.send_message(message.chat.id, normalise(message.text))
+
+
+# Just give na baba
+@bot.message_handler(commands=['give'])
+def gimmegimme(message):
+    bot.reply_to(message, "Get this man a \"" + message.text.strip('/give ')
+                 + "\"")  # Avengers reference XD
+    for _ in range(5):
+        sleep(60)
+        bot.send_message(message.chat.id, 'Give {} \"'.format(message.from_user.first_name)
+                         + message.text.strip('/give ') + "\"")
 
 
 # Brooklyn Nine-Nine needs more seasons
